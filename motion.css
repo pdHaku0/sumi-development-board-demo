@@ -1,0 +1,30 @@
+/* Event trial motion (2026-09-15). Short, decelerating transitions for direct interactions.
+   Reduced motion is handled by the global rule in styles.css and by motion.js.
+   Revert together with the motion.js calls in app.js to remove the trial. */
+:root { --motion-enter: cubic-bezier(0.25, 1, 0.5, 1); }
+
+/* Detail enters from the side it occupies: beside the chart, below it, or
+   over the phone list. One animation name keeps resizes from replaying it. */
+.task-panel { --detail-enter-from: translateX(12px); animation: detail-enter 220ms var(--motion-enter); }
+/* Bottom sheet: the panel box stays put, because revealing the selected card
+   measures its top edge; only the content rises into it. */
+@media(max-width:1000px) and (min-width:601px) {
+  .task-panel { animation-name: detail-fade; }
+  body:not(.compact-detail) .task-panel > #detail { animation: detail-rise 220ms var(--motion-enter); }
+}
+@keyframes detail-fade { from { opacity: .5; } }
+@keyframes detail-rise { from { transform: translateY(14px); } }
+@media(max-width:600px) and (orientation:portrait) {
+  body.has-detail .task-panel { --detail-enter-from: translateX(14px); animation: detail-enter 220ms var(--motion-enter); }
+}
+@keyframes detail-enter { from { opacity: .5; transform: var(--detail-enter-from); } }
+
+/* The copy/save confirmation rises into place instead of cutting in. */
+.toast:not([hidden]) { animation: toast-enter 200ms var(--motion-enter); }
+@keyframes toast-enter {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+
+/* Smooth the existing hover treatment. Selection's one-shot pulse is in motion.js. */
+.phase-progress-task i { transition:filter 160ms var(--motion-enter); }

@@ -1,0 +1,101 @@
+/* Phone search: the always-visible search row collapses to one icon at the
+   right edge of the view tabs. The icon opens a full-screen search surface
+   on the same paper, with thin rules instead of cards. */
+.search-toggle {
+  display: none;
+  width: 44px; height: 44px;
+  flex: none;
+  align-items: center; justify-content: center;
+  color: var(--secondary);
+}
+.search-toggle:hover { color: var(--ink); }
+.search-toggle svg { width: 18px; height: 18px; stroke-width: 1.3; }
+.search-toggle:active { transform: none; }
+
+/* Icon mode: phone portrait, and short landscape screens where a search row
+   would take space the chart and tabs need. */
+@media (max-width: 700px), (orientation: landscape) and (max-width: 1100px) and (max-height: 600px) {
+  /* compact-detail and chart fullscreen own the nav row; never resurrect it. */
+  body:not(.compact-detail):not(.chart-fullscreen) .view-nav,
+  body:not(.compact-detail):not(.chart-fullscreen).has-detail .view-nav {
+    display: flex; align-items: center; justify-content: flex-start;
+  }
+  .view-tabs {
+    flex: 1 1 auto; min-width: 0;
+    justify-content: flex-start;
+    overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .view-tabs::-webkit-scrollbar { display: none; }
+  .view-tab { flex: none; }
+  .search { display: none; }
+  .search-toggle { display: inline-flex; margin-left: auto; }
+}
+
+.search-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: var(--paper);
+  display: flex; flex-direction: column;
+  padding: max(8px, var(--safe-top)) max(18px, var(--safe-right)) 0 max(18px, var(--safe-left));
+}
+.search-overlay[hidden] { display: none; }
+.search-bar {
+  flex: none;
+  display: flex; align-items: center; gap: 2px;
+  min-height: 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.search-bar-icon { display: flex; color: var(--secondary); }
+.search-bar-icon svg { width: 17px; height: 17px; stroke-width: 1.3; }
+#search-field {
+  flex: 1; min-width: 0;
+  border: 0; border-radius: 0; background: none;
+  -webkit-appearance: none; appearance: none;
+  font-size: 16px; line-height: 1.6;
+  padding: 14px 10px;
+}
+#search-field:focus, #search-field:focus-visible { outline: none; box-shadow: none; }
+.search-close {
+  flex: none; min-height: 44px; padding: 0 8px 0 12px;
+  font-size: 12px; color: var(--secondary);
+}
+.search-close:hover { color: var(--ink); }
+.search-results {
+  flex: 1; min-height: 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: max(28px, var(--safe-bottom));
+}
+.search-group-title {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 0; padding: 20px 0 9px;
+  font-size: 10px; font-weight: 400; letter-spacing: .12em;
+  color: var(--secondary);
+}
+.search-group-title > span { letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.search-result {
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  width: 100%; min-height: 56px;
+  padding: 13px 2px;
+  text-align: left;
+  border-bottom: 1px solid #ececef;
+}
+.search-result:active { transform: none; background: #f6f6f7; }
+.search-result-title {
+  font-size: 14px; font-weight: 350; line-height: 1.7;
+  color: var(--ink); overflow-wrap: anywhere;
+}
+.search-result-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px;
+  font-size: 11px; line-height: 1.5; color: #6b6d73;
+}
+.search-result-meta .status-swatch { width: 5px; height: 5px; border-radius: 50%; flex: none; }
+.search-result-meta .meta-sep { color: #a6a8ad; }
+.search-empty { padding: 52px 2px; font-size: 13px; line-height: 2; color: var(--secondary); }
+
+/* Restrained focus marks inside the search surface; no signature outline. */
+.search-overlay :focus-visible,
+.search-toggle:focus-visible {
+  outline: 1px solid #6d6f76; outline-offset: 3px;
+}
+#search-field:focus-visible { outline: none; }

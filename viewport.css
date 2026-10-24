@@ -1,0 +1,95 @@
+/* Fullscreen owns the viewport. Insets follow the current device orientation,
+   and the chart takes the remaining height instead of subtracting estimates. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --content-safe-left: var(--safe-left);
+  --content-safe-right: var(--safe-right);
+}
+html { -webkit-text-size-adjust: 100%; }
+.compact-detail { overflow: hidden !important; }
+body:is(.chart-fullscreen,.compact-detail) main > .view-nav { display: none; }
+.workspace-retreat { position: fixed; inset: 0; overflow: hidden; z-index: 8; pointer-events: none; }
+.workspace-retreat > * { background: var(--paper); }
+.workspace-retreat > .view-nav { display: flex !important; }
+.workspace-retreat > .phase-overview { display: grid !important; }
+.task-panel { padding-top: var(--safe-top); padding-right: var(--safe-right); padding-bottom: var(--safe-bottom); }
+@media(max-width:1000px) {
+  main, .has-detail main {
+    padding-top: max(5px, var(--safe-top));
+    padding-left: max(18px, var(--safe-left));
+    padding-right: max(18px, var(--safe-right));
+  }
+}
+body:is(.chart-fullscreen,.compact-detail) main, body:is(.chart-fullscreen,.compact-detail).has-detail main {
+  position: fixed; inset: 0; height: 100dvh; max-width: none;
+  padding: max(4px, var(--safe-top)) max(17px, var(--content-safe-right)) max(4px, var(--safe-bottom)) max(17px, var(--content-safe-left));
+  display: flex; flex-direction: column; overflow: hidden;
+}
+:is(.chart-fullscreen,.compact-detail) #content, :is(.chart-fullscreen,.compact-detail) .overview-layout, :is(.chart-fullscreen,.compact-detail) .chart-workspace {
+  flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column;
+}
+:is(.chart-fullscreen,.compact-detail) .plan-toolbar {
+  flex: none; height: auto; min-height: 44px; margin-bottom: 4px;
+  gap: 8px; align-items: center;
+}
+:is(.chart-fullscreen,.compact-detail) .plan-summary { min-width: 0; flex-wrap: wrap; gap: 4px 10px; }
+:is(.chart-fullscreen,.compact-detail) .plan-tools { flex: none; }
+:is(.chart-fullscreen,.compact-detail) .rotate-hint { flex: none; }
+:is(.chart-fullscreen,.compact-detail) .plan-scroll, :is(.chart-fullscreen,.compact-detail).has-detail .plan-scroll {
+  flex: 1; min-height: 0; height: auto; max-height: none;
+}
+:is(.chart-fullscreen,.compact-detail) .fetch-notice:not([hidden]) { flex: none; margin-bottom: 4px; padding: 4px 8px; }
+@media(max-width:1000px) and (orientation:portrait) {
+  body:is(.chart-fullscreen,.compact-detail).has-detail main { height: 45dvh; }
+}
+
+/* Short, wide viewports have room beside the chart, not underneath it.
+   Keep a usable reading width and let the chart itself pan horizontally. */
+@media(orientation:landscape) and (min-width:560px) and (max-height:600px) {
+  /* Keep the cutout-side protection. The opposite edge uses a reading margin
+     instead of reserving a second cutout-width strip. Unknown angles keep both. */
+  :root[data-landscape-cutout="left"] { --content-safe-right: 20px; }
+  :root[data-landscape-cutout="right"] { --content-safe-left: 20px; }
+  body { --landscape-panel: min(44vw, 400px); }
+  body.has-detail:not(.detail-expanded) main {
+    margin-right: var(--landscape-panel); padding-bottom: max(4px, var(--safe-bottom));
+    padding-right: 14px;
+  }
+  body:is(.chart-fullscreen,.compact-detail).has-detail main { height: 100dvh; }
+  body.has-detail:not(.detail-expanded) .task-panel {
+    inset: 0 0 0 auto; width: var(--landscape-panel); height: 100dvh;
+    border: 0; border-left: 1px solid var(--rule); box-shadow: none; animation: none;
+  }
+  .task-panel { padding-right: 0; }
+  .task-panel .detail-body { padding: 8px max(20px, var(--content-safe-right)) 28px 20px; }
+  body.detail-expanded .task-panel .detail-body { padding-left: max(20px, var(--content-safe-left)); }
+  .detail-titlebar { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+  .detail-titlebar .detail-kicker { max-width: calc(100% - 132px); padding: 0; font-size: 9px; }
+  .detail-titlebar .detail-tools .icon-button { display: inline-flex; width: 40px; height: 44px; }
+  .detail-back, .mobile-task-nav { display: none; }
+  .has-detail .toast { bottom: max(15px, var(--safe-bottom)); }
+  .task-panel .detail-body h2 { font-size: 18px; line-height: 1.65; }
+  .task-panel .detail-summary { font-size: 12px; margin-top: 12px; }
+  :is(.chart-fullscreen,.compact-detail) .plan-legend { display: none; }
+  :is(.chart-fullscreen,.compact-detail).has-detail .plan-count { display: none; }
+  :is(.chart-fullscreen,.compact-detail) .plan-summary { font-size: 11px; gap: 3px 7px; }
+  :is(.chart-fullscreen,.compact-detail) .plan-tools { gap: 4px; }
+  :is(.chart-fullscreen,.compact-detail) .dependency-toggle { font-size: 10px; min-height: 44px; }
+  :is(.chart-fullscreen,.compact-detail) .chart-fullscreen-button { width: 40px; height: 44px; }
+  :is(.chart-fullscreen,.compact-detail) .fullscreen-phase-controls button { height: 44px; }
+  :is(.chart-fullscreen,.compact-detail).has-detail .dependency-toggle { font-size: 0; gap: 0; width: 32px; justify-content: center; }
+  :is(.chart-fullscreen,.compact-detail) .flow-head.plan-head { height: 28px; min-height: 28px; }
+  :is(.chart-fullscreen,.compact-detail) .flow-board .plan-group { padding: 12px 0 10px; }
+  :is(.chart-fullscreen,.compact-detail) .flow-grid { row-gap: 22px; }
+}
+
+/* Text entry stays comfortably sized on touch devices in either orientation. */
+@media(any-pointer:coarse) {
+  input, textarea, select, [contenteditable="true"], #search { font-size: 16px; }
+}
+
+/* Optical alignment with the nav labels; preserve the 44px touch target. */
+.view-nav .search-toggle svg { width: 15px; height: 15px; transform: translate(9px, 2px); }
